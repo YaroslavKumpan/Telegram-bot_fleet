@@ -1,33 +1,28 @@
 from aiogram import Router, F
 from aiogram.filters import Command, CommandObject
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from services.invite_service import process_invite
-from services.user_service import get_user_by_telegram_id
+from services.user_service import get_user_by_telegram_id, register_driver
 from bot.keyboards.default import main_menu_keyboard
+from bot.states.registration import RegistrationStates
 
 router = Router()
 
 @router.message(Command("start"))
-async def cmd_start(message: Message, command: CommandObject):
-    """
-    Обработчик команды /start.
-    Может содержать инвайт-код: /start ABC123
-    """
+async def cmd_start(message: Message, command: CommandObject, state: FSMContext):
     telegram_id = message.from_user.id
-    args = command.args  # строка после /start
+    args = command.args
 
-    # Проверяем, есть ли уже такой пользователь
     user = get_user_by_telegram_id(telegram_id)
 
     if user:
-        # Пользователь уже привязан — просто показываем меню
         await message.answer(
             f"С возвращением, {user.full_name}!",
             reply_markup=main_menu_keyboard(user.role)
         )
         return
 
-    # Если пользователь новый и есть аргумент — обрабатываем инвайт
     if args:
         invite_code = args.strip()
         success, msg = process_invite(telegram_id, invite_code)
@@ -40,10 +35,33 @@ async def cmd_start(message: Message, command: CommandObject):
             )
         return
 
-    # Если нет инвайта и пользователь не найден — возможно, самовольная регистрация водителя
-    # По заданию водитель может регистрироваться сам. Реализуем это:
+    # Самостоятельная регистрация водителя
+    await state.set_state(RegistrationStates.waiting_for_name)
     await message.answer(
-        "Добро пожаловать! Похоже, вы новый водитель.\n"
-        "Введите вашу фамилию и имя (например: Иванов Иван):"
+        "🚛 Добро пожаловать в систему управления автопарком!\n\n"
+        "Для регистрации введите ваше ФИО (например: Иванов Иван):"
     )
-    # Здесь нужно будет состояние FSM для регистрации — добавим позже
+
+@router.message(RegistrationStates.waiting_for_name, F.text)
+async def process_name(message: Message, state: FSMContext):
+    full_name = message.text.strip()
+
+    # Простая валидация: минимум два слова
+    parts = full_name.split()
+    if len(parts) < 2:
+        await message.answer("Пожалуйста, введите фамилию и имя (два слова).")
+        return
+
+    first_name = parts[1]  # Имя
+    last_name = parts[0]   # Фамилия
+
+    user = register_driver(message.from_user.id, first_name, last_name)
+
+    await state.clear()
+    await message.answer(
+        f"✅ Регистрация завершена! Добро пожаловать, {user.full_name}!\n\n"
+        "Теперь добавьте вашу первую машину. Отправьте госномер (например: А123ВС):",
+        reply_markup=main_menu_keyboard('driver')
+    )
+    # Переключаем на состояние добавления машины
+    await state.set_state(RegistrationStates.waiting_for_vehicle_number)
