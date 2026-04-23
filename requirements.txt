@@ -1,0 +1,8 @@
+django>=4.2,<5.0
+psycopg2-binary
+celery[redis]
+redis
+aiogram>=3.0
+requests
+Pillow
+python-decouple
