@@ -6,3 +6,4 @@ aiogram>=3.0
 requests
 Pillow
 python-decouple
+asgiref>=3.7.0

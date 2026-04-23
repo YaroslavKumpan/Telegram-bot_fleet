@@ -2,8 +2,9 @@ from aiogram import Router, F
 from aiogram.filters import Command, CommandObject
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-from services.invite_service import process_invite
-from services.user_service import get_user_by_telegram_id, register_driver
+from asgiref.sync import sync_to_async
+from services.invite_service import process_invite_sync
+from services.user_service import get_user_by_telegram_id_sync, register_driver_sync
 from bot.keyboards.default import main_menu_keyboard
 from bot.states.registration import RegistrationStates
 
@@ -11,10 +12,15 @@ router = Router()
 
 @router.message(Command("start"))
 async def cmd_start(message: Message, command: CommandObject, state: FSMContext):
+    """
+    Обработчик команды /start.
+    Может содержать инвайт-код: /start ABC123
+    """
     telegram_id = message.from_user.id
     args = command.args
 
-    user = get_user_by_telegram_id(telegram_id)
+    # Используем sync_to_async для синхронных ORM-запросов
+    user = await sync_to_async(get_user_by_telegram_id_sync)(telegram_id)
 
     if user:
         await message.answer(
@@ -25,10 +31,10 @@ async def cmd_start(message: Message, command: CommandObject, state: FSMContext)
 
     if args:
         invite_code = args.strip()
-        success, msg = process_invite(telegram_id, invite_code)
+        success, msg = await sync_to_async(process_invite_sync)(telegram_id, invite_code)
         await message.answer(msg)
         if success:
-            user = get_user_by_telegram_id(telegram_id)
+            user = await sync_to_async(get_user_by_telegram_id_sync)(telegram_id)
             await message.answer(
                 "Главное меню:",
                 reply_markup=main_menu_keyboard(user.role)
@@ -46,7 +52,6 @@ async def cmd_start(message: Message, command: CommandObject, state: FSMContext)
 async def process_name(message: Message, state: FSMContext):
     full_name = message.text.strip()
 
-    # Простая валидация: минимум два слова
     parts = full_name.split()
     if len(parts) < 2:
         await message.answer("Пожалуйста, введите фамилию и имя (два слова).")
@@ -55,7 +60,10 @@ async def process_name(message: Message, state: FSMContext):
     first_name = parts[1]  # Имя
     last_name = parts[0]   # Фамилия
 
-    user = register_driver(message.from_user.id, first_name, last_name)
+    # Создаём водителя через sync_to_async
+    user = await sync_to_async(register_driver_sync)(
+        message.from_user.id, first_name, last_name
+    )
 
     await state.clear()
     await message.answer(
@@ -63,5 +71,4 @@ async def process_name(message: Message, state: FSMContext):
         "Теперь добавьте вашу первую машину. Отправьте госномер (например: А123ВС):",
         reply_markup=main_menu_keyboard('driver')
     )
-    # Переключаем на состояние добавления машины
     await state.set_state(RegistrationStates.waiting_for_vehicle_number)

@@ -1,13 +1,17 @@
+# bot/keyboards/inline.py
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from apps.vehicles.models import Vehicle
+from services.vehicle_service import format_vehicle_number
 
-def vehicle_selection_keyboard(vehicles: list[Vehicle], prefix: str) -> InlineKeyboardMarkup:
-    """Клавиатура для выбора машины из списка."""
+def vehicle_selection_keyboard(vehicles: list, prefix: str) -> InlineKeyboardMarkup:
+    """
+    Клавиатура для выбора машины.
+    prefix: 'wash' или 'service'
+    """
     buttons = []
     for vehicle in vehicles:
         buttons.append([
             InlineKeyboardButton(
-                text=vehicle.number,
+                text=format_vehicle_number(vehicle.number),
                 callback_data=f"select_vehicle_{prefix}_{vehicle.id}"
             )
         ])

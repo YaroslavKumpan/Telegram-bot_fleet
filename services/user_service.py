@@ -1,14 +1,15 @@
 from apps.users.models import User
 
-def get_user_by_telegram_id(telegram_id: int) -> User | None:
-    """Получает пользователя по telegram_id."""
+# Синхронная версия (для использования в sync-контексте)
+def get_user_by_telegram_id_sync(telegram_id: int):
+    """Синхронная версия. Использовать ТОЛЬКО вне async-контекста."""
     try:
         return User.objects.get(telegram_id=telegram_id)
     except User.DoesNotExist:
         return None
 
-def register_driver(telegram_id: int, first_name: str, last_name: str = '') -> User:
-    """Регистрирует нового водителя через бота."""
+def register_driver_sync(telegram_id: int, first_name: str, last_name: str = ''):
+    """Синхронная регистрация водителя."""
     username = f"driver_{telegram_id}"
     user = User.objects.create(
         username=username,
