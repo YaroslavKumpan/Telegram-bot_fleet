@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from decouple import config
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -40,9 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # наши приложения
-    'apps.users',
-    'apps.vehicles',
-    'apps.reports',
+    'apps.users.apps.UsersConfig',
+    'apps.vehicles.apps.VehiclesConfig',
+    'apps.reports.apps.ReportsConfig',
 ]
 
 AUTH_USER_MODEL = 'users.User'
