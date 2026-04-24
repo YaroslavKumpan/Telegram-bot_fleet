@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'apps.users.apps.UsersConfig',
     'apps.vehicles.apps.VehiclesConfig',
     'apps.reports.apps.ReportsConfig',
-    'bot'
+    'bot',
+    #'tasks',
 ]
 
 AUTH_USER_MODEL = 'users.User'

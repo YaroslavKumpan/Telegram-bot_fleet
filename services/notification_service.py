@@ -1,10 +1,11 @@
-# services/notification_service.py
+# services/notification_service.py (полный исправленный файл)
 from apps.users.models import User
 from apps.reports.models import ServiceReport
 from services.vehicle_service import format_vehicle_number
 from infra.telegram_client import telegram_client
 from django.conf import settings
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +13,6 @@ logger = logging.getLogger(__name__)
 def notify_accountants_about_report(report_id: int):
     """
     Отправляет уведомление всем бухгалтерам о новом акте.
-    Эта функция вызывается в Celery задаче.
     """
     try:
         report = ServiceReport.objects.select_related(
@@ -43,27 +43,25 @@ def notify_accountants_about_report(report_id: int):
         f"📅 Дата: {date_str}"
     )
 
-    # Получаем URL фото
-    if report.photo:
-        photo_url = f"https://parkauto.ru{report.photo.url}"
-    else:
-        photo_url = None
-
     # Отправляем уведомления
     for accountant in accountants:
         try:
-            if photo_url:
-                telegram_client.send_photo(
+            if report.photo and os.path.exists(report.photo.path):
+                # Отправляем фото как файл
+                telegram_client.send_photo_file(
                     chat_id=accountant.telegram_id,
-                    photo_url=photo_url,
+                    photo_path=report.photo.path,
                     caption=caption
                 )
+                logger.info(f"Notification with photo sent to {accountant.telegram_id}")
             else:
+                # Если фото нет — отправляем только текст
                 telegram_client.send_message(
                     chat_id=accountant.telegram_id,
                     text=caption + "\n\n⚠️ Фото недоступно"
                 )
-            logger.info(f"Notification sent to accountant {accountant.telegram_id}")
+                logger.info(f"Text notification sent to {accountant.telegram_id}")
+
         except Exception as e:
             logger.error(f"Failed to send notification to {accountant.telegram_id}: {e}")
 
@@ -89,8 +87,9 @@ def notify_directors_about_violations(violations: list):
         by_driver[vehicle.driver].append((vehicle, days))
 
     # Формируем текст
+    from django.utils import timezone
     text = "⚠️ <b>Нарушения графика мойки</b>\n\n"
-    text += f"📅 Проверка от {__import__('django').utils.timezone.now().strftime('%d.%m.%Y')}\n\n"
+    text += f"📅 Проверка от {timezone.now().strftime('%d.%m.%Y')}\n\n"
 
     for driver, vehicle_list in by_driver.items():
         text += f"👤 <b>{driver.full_name}</b>:\n"

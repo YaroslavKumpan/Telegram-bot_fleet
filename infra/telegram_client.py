@@ -2,6 +2,9 @@
 import requests
 from django.conf import settings
 from typing import Optional
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class TelegramClient:
@@ -19,37 +22,35 @@ class TelegramClient:
             'text': text,
             'parse_mode': 'HTML'
         }
-        response = requests.post(url, json=payload, timeout=10)
-        response.raise_for_status()
-        return response.json()
-
-    def send_photo(self, chat_id: int, photo_url: str, caption: str = '') -> dict:
-        """Отправляет фото по URL."""
-        url = f"{self.base_url}/sendPhoto"
-        payload = {
-            'chat_id': chat_id,
-            'photo': photo_url,
-            'caption': caption,
-            'parse_mode': 'HTML'
-        }
-        response = requests.post(url, json=payload, timeout=15)
-        response.raise_for_status()
-        return response.json()
+        try:
+            response = requests.post(url, json=payload, timeout=10)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            logger.error(f"Failed to send message to {chat_id}: {e}")
+            raise
 
     def send_photo_file(self, chat_id: int, photo_path: str, caption: str = '') -> dict:
         """Отправляет фото как файл."""
         url = f"{self.base_url}/sendPhoto"
-        with open(photo_path, 'rb') as photo:
-            files = {'photo': photo}
-            data = {
-                'chat_id': chat_id,
-                'caption': caption,
-                'parse_mode': 'HTML'
-            }
-            response = requests.post(url, data=data, files=files, timeout=15)
-            response.raise_for_status()
-        return response.json()
+        try:
+            with open(photo_path, 'rb') as photo:
+                files = {'photo': photo}
+                data = {
+                    'chat_id': chat_id,
+                    'caption': caption,
+                    'parse_mode': 'HTML'
+                }
+                response = requests.post(url, data=data, files=files, timeout=15)
+                response.raise_for_status()
+                return response.json()
+        except FileNotFoundError:
+            logger.error(f"Photo file not found: {photo_path}")
+            raise
+        except Exception as e:
+            logger.error(f"Failed to send photo to {chat_id}: {e}")
+            raise
 
 
-# Глобальный экземпляр для использования в задачах
+# Глобальный экземпляр
 telegram_client = TelegramClient()

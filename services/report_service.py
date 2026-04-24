@@ -90,3 +90,27 @@ def save_service_report_sync(vehicle_id: int, photo_file_id: str) -> tuple:
 
     except Exception as e:
         return False, f"❌ Ошибка при сохранении: {str(e)}", None
+
+
+def save_service_report_sync(vehicle_id: int, photo_file_id: str) -> tuple:
+    """Сохраняет акт выполненных работ и уведомляет бухгалтеров."""
+    try:
+        vehicle = Vehicle.objects.select_related('driver').get(id=vehicle_id)
+    except Vehicle.DoesNotExist:
+        return False, "❌ Машина не найдена.", None
+
+    try:
+        photo_bytes = download_telegram_photo(photo_file_id)
+        report = ServiceReport(vehicle=vehicle)
+        now = timezone.now()
+        file_name = f"service_{vehicle.number}_{now:%Y%m%d_%H%M%S}.jpg"
+        report.photo.save(file_name, ContentFile(photo_bytes), save=False)
+        report.save()
+
+        # Асинхронно уведомляем бухгалтеров
+        from tasks.notifications import notify_accountants_task
+        notify_accountants_task.delay(report.id)
+
+        return True, "✅ Акт выполненных работ успешно отправлен!", report
+    except Exception as e:
+        return False, f"❌ Ошибка при сохранении: {str(e)}", None
