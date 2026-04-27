@@ -105,3 +105,37 @@ def notify_directors_about_violations(violations: list):
             )
         except Exception as e:
             logger.error(f"Failed to send violation to director {director.telegram_id}: {e}")
+
+def notify_accountants_daily_report(reports_by_driver: dict, date):
+    """Ежедневная сводка актов, сгруппированная по водителям."""
+    accountants = User.objects.filter(
+        role=User.Role.ACCOUNTANT,
+        telegram_id__isnull=False
+    )
+    if not accountants.exists():
+        logger.info("No accountants to notify")
+        return
+
+    date_str = date.strftime('%d.%m.%Y')
+    text = f"📋 <b>Сводка актов за {date_str}</b>\n\n"
+
+    total_acts = 0
+    for driver, reports in reports_by_driver.items():
+        text += f"👤 <b>{driver.full_name}</b> ({len(reports)} акт.):\n"
+        for report in reports:
+            vehicle_number = format_vehicle_number(report.vehicle.number)
+            time_str = report.created_at.strftime('%H:%M')
+            text += f"  • {vehicle_number} — {time_str}\n"
+        text += "\n"
+        total_acts += len(reports)
+
+    text += f"📊 <b>Всего актов за день: {total_acts}</b>"
+
+    for accountant in accountants:
+        try:
+            telegram_client.send_message(
+                chat_id=accountant.telegram_id,
+                text=text
+            )
+        except Exception as e:
+            logger.error(f"Failed to send daily report to {accountant.telegram_id}: {e}")

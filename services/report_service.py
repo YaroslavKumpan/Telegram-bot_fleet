@@ -61,35 +61,6 @@ def save_wash_report_sync(vehicle_id: int, photo_file_id: str) -> tuple:
         return False, f"❌ Ошибка при сохранении: {str(e)}", None
 
 
-def save_service_report_sync(vehicle_id: int, photo_file_id: str) -> tuple:
-    """
-    Сохраняет акт выполненных работ.
-    Возвращает (успех, сообщение, report/None).
-    """
-    try:
-        vehicle = Vehicle.objects.select_related('driver').get(id=vehicle_id)
-    except Vehicle.DoesNotExist:
-        return False, "❌ Машина не найдена.", None
-
-    try:
-        # Скачиваем фото
-        photo_bytes = download_telegram_photo(photo_file_id)
-
-        # Создаём отчёт
-        report = ServiceReport(vehicle=vehicle)
-
-        # Формируем имя файла (используем текущее время)
-        now = timezone.now()
-        file_name = f"service_{vehicle.number}_{now:%Y%m%d_%H%M%S}.jpg"
-
-        # Сохраняем фото
-        report.photo.save(file_name, ContentFile(photo_bytes), save=False)
-        report.save()
-
-        return True, "✅ Акт выполненных работ успешно отправлен!", report
-
-    except Exception as e:
-        return False, f"❌ Ошибка при сохранении: {str(e)}", None
 
 
 def save_service_report_sync(vehicle_id: int, photo_file_id: str) -> tuple:

@@ -1,13 +1,13 @@
-# tasks/daily_report.py
 from celery import shared_task
 from django.utils import timezone
 from datetime import timedelta
 from apps.reports.models import ServiceReport
 from apps.users.models import User
+
 from collections import defaultdict
 import logging
 
-from tasks.notifications import notify_accountants_daily_report
+from services.notification_service import notify_accountants_daily_report
 
 logger = logging.getLogger(__name__)
 

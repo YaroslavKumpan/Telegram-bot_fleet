@@ -1,14 +1,13 @@
-# bot/handlers/reports.py
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 from asgiref.sync import sync_to_async
+
+from bot.keyboards.default import main_menu_keyboard, vehicle_selection_keyboard
+from bot.states.reports import ReportStates
 from services.report_service import save_wash_report_sync, save_service_report_sync
 from services.user_service import get_user_by_telegram_id_sync
 from services.vehicle_service import get_user_vehicles_sync, format_vehicle_number
-from bot.keyboards.default import main_menu_keyboard
-from bot.keyboards.inline import vehicle_selection_keyboard
-from bot.states.reports import ReportStates
 
 router = Router()
 

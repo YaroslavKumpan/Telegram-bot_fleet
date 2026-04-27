@@ -41,4 +41,8 @@ class User(AbstractUser):
 
     @property
     def full_name(self):
-        return self.__str__()
+        if self.first_name and self.last_name:
+            return f'{self.first_name} {self.last_name}'
+        if self.first_name:
+            return self.first_name
+        return f"Водитель {self.telegram_id}" if self.telegram_id else self.username
