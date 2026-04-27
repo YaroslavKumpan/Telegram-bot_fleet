@@ -1,4 +1,3 @@
-# infra/telegram_client.py
 import requests
 from django.conf import settings
 from typing import Optional

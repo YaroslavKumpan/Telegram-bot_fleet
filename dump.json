@@ -1,0 +1,277 @@
+﻿[
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2026-04-23T19:38:59.296Z",
+    "user": 1,
+    "content_type": 6,
+    "object_id": "1",
+    "object_repr": "Slava",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"\\u0420\\u043e\\u043b\\u044c\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-04-24T19:18:10.083Z",
+    "user": 1,
+    "content_type": 6,
+    "object_id": "5",
+    "object_repr": "buhgalter",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2026-04-24T19:19:20.483Z",
+    "user": 1,
+    "content_type": 6,
+    "object_id": "5",
+    "object_repr": "�������� ���������",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Last name\", \"Email\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2026-04-24T19:26:58.870Z",
+    "user": 1,
+    "content_type": 6,
+    "object_id": "4",
+    "object_repr": "����� ���",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2026-04-24T19:37:01.007Z",
+    "user": 1,
+    "content_type": 6,
+    "object_id": "5",
+    "object_repr": "�������� ���������",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2026-04-24T19:37:29.254Z",
+    "user": 1,
+    "content_type": 6,
+    "object_id": "6",
+    "object_repr": "Yaroslav",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2026-04-24T19:37:48.177Z",
+    "user": 1,
+    "content_type": 6,
+    "object_id": "6",
+    "object_repr": "������� ������",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Last name\", \"Email\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2026-04-24T19:38:08.944Z",
+    "user": 1,
+    "content_type": 6,
+    "object_id": "2",
+    "object_repr": "������ ����",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "jfaovh6ejocnnznhplw5xs4o6lv9vvgy",
+  "fields": {
+    "session_data": ".eJxVjMEOwiAQRP-FsyEUCi4evfsNZBcWqRpISnsy_rtt0oMeZ96beYuA61LC2nkOUxIXMYjTb0cYn1x3kB5Y703GVpd5Irkr8qBd3lri1_Vw_w4K9rKtdXTgjR8R1DkjO7Sc8hY0M1mwSERojNMw6IjJY3ZKE6gMflQaEonPF_bgOF8:1wFzsE:0QYAL3EWPDpV-3cmIcOGa-VYujSxe8DTE__Zz04g_WY",
+    "expire_date": "2026-05-07T19:38:06.297Z"
+  }
+},
+{
+  "model": "users.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$i0L6Ib0jbSX2SZLfOfZper$ZKZ8MO0GVM08W1jVgOphf7FhibzLkqWWLyC317ZcKog=",
+    "last_login": "2026-04-23T19:38:06Z",
+    "is_superuser": true,
+    "username": "Slava",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-04-23T17:49:53Z",
+    "role": "director",
+    "telegram_id": null,
+    "invite_code": null,
+    "email": "Slava_100500@mail.ru",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 3,
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "driver_582529330",
+    "first_name": "�����",
+    "last_name": "�����",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-23T19:22:33.013Z",
+    "role": "driver",
+    "telegram_id": 582529330,
+    "invite_code": null,
+    "email": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$eaXuU96ETqszLuz9hsqUMx$5nmhwF5OiG5pPzTZ6u2AE0iOdrjtFk3o9AItmt8xSkY=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "Yaroslav",
+    "first_name": "�������",
+    "last_name": "������",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-24T19:37:29Z",
+    "role": "accountant",
+    "telegram_id": 941534664,
+    "invite_code": null,
+    "email": "kumpan.1996@mail.ru",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 7,
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "driver_1102372964",
+    "first_name": "�������",
+    "last_name": "��������",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-24T19:39:39.419Z",
+    "role": "driver",
+    "telegram_id": 1102372964,
+    "invite_code": null,
+    "email": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "vehicles.vehicle",
+  "pk": 4,
+  "fields": {
+    "number": "AA8482-8",
+    "driver": 3
+  }
+},
+{
+  "model": "vehicles.vehicle",
+  "pk": 6,
+  "fields": {
+    "number": "AB1234-7",
+    "driver": 7
+  }
+},
+{
+  "model": "reports.washreport",
+  "pk": 4,
+  "fields": {
+    "vehicle": 4,
+    "photo": "wash_photos/wash_AA8482-8_20260423_192448.jpg",
+    "created_at": "2026-04-23T19:24:48.397Z"
+  }
+},
+{
+  "model": "reports.washreport",
+  "pk": 6,
+  "fields": {
+    "vehicle": 6,
+    "photo": "wash_photos/wash_AB1234-7_20260424_194708.jpg",
+    "created_at": "2026-04-24T19:47:08.563Z"
+  }
+},
+{
+  "model": "reports.servicereport",
+  "pk": 4,
+  "fields": {
+    "vehicle": 4,
+    "photo": "service_photos/service_AA8482-8_20260423_192502.jpg",
+    "created_at": "2026-04-23T19:25:02.109Z"
+  }
+},
+{
+  "model": "reports.servicereport",
+  "pk": 7,
+  "fields": {
+    "vehicle": 6,
+    "photo": "service_photos/service_AB1234-7_20260424_194058.jpg",
+    "created_at": "2026-04-24T19:40:58.773Z"
+  }
+},
+{
+  "model": "reports.servicereport",
+  "pk": 8,
+  "fields": {
+    "vehicle": 6,
+    "photo": "service_photos/service_AB1234-7_20260424_194230.jpg",
+    "created_at": "2026-04-24T19:42:30.190Z"
+  }
+},
+{
+  "model": "reports.servicereport",
+  "pk": 9,
+  "fields": {
+    "vehicle": 6,
+    "photo": "service_photos/service_AB1234-7_20260424_194453.jpg",
+    "created_at": "2026-04-24T19:44:53.888Z"
+  }
+},
+{
+  "model": "reports.servicereport",
+  "pk": 10,
+  "fields": {
+    "vehicle": 6,
+    "photo": "service_photos/service_AB1234-7_20260424_194729.jpg",
+    "created_at": "2026-04-24T19:47:29.900Z"
+  }
+}
+]
