@@ -13,13 +13,13 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 import django
 django.setup()
 
-# Явно импортируем задачи
-from tasks.notifications import notify_accountants_task
-from tasks.weekly import check_wash_reports
-
 app.conf.beat_schedule = {
     'check-washes-weekly': {
         'task': 'tasks.weekly.check_wash_reports',
-        'schedule': crontab(day_of_week=1, hour=9, minute=0),
+        'schedule': crontab(day_of_week=1, hour=9, minute=0),  # Пн 9:00
+    },
+    'send-daily-report': {
+        'task': 'tasks.daily_report.send_daily_report',
+        'schedule': crontab(hour=18, minute=0),  # Каждый день в 18:00
     },
 }

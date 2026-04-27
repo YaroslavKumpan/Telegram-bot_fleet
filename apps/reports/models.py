@@ -48,3 +48,24 @@ class ServiceReport(models.Model):
 
     def __str__(self):
         return f'Акт {self.vehicle.number} от {self.created_at:%d.%m.%Y}'
+
+
+class MileageReport(models.Model):
+    """Отчёт о пробеге автомобиля"""
+    vehicle = models.ForeignKey(
+        Vehicle,
+        on_delete=models.CASCADE,
+        related_name='mileage_reports',
+        verbose_name='Автомобиль'
+    )
+    mileage = models.PositiveIntegerField('Пробег (км)')
+    photo = models.ImageField('Фото одометра', upload_to='mileage_photos/', null=True, blank=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Отчёт о пробеге'
+        verbose_name_plural = 'Отчёты о пробеге'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Пробег {self.vehicle.number}: {self.mileage} км от {self.created_at:%d.%m.%Y}'
