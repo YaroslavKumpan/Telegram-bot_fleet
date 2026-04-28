@@ -8,6 +8,7 @@ def main_menu_keyboard(role: str) -> ReplyKeyboardMarkup:
         keyboard = [
             [KeyboardButton(text="📸 Отправить мойку")],
             [KeyboardButton(text="🧾 Отправить акт")],
+            [KeyboardButton(text="🛣 Отправить пробег")],
             [KeyboardButton(text="🚗 Мои машины")],
         ]
     elif role == 'accountant':
@@ -18,6 +19,9 @@ def main_menu_keyboard(role: str) -> ReplyKeyboardMarkup:
         ]
     elif role == 'director':
         keyboard = [
+            [KeyboardButton(text="📸 Фотоотчёты мойки")],
+            [KeyboardButton(text="📋 Акты работ")],
+            [KeyboardButton(text="⚠️ Нарушения мойки")],
             [KeyboardButton(text="ℹ️ Информация")],
         ]
     else:

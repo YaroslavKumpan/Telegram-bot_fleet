@@ -14,6 +14,8 @@ from bot.handlers.vehicles import router as vehicles_router
 from bot.handlers.reports import router as reports_router
 from bot.handlers.menu import router as menu_router
 from bot.handlers.accountant import router as accountant_router
+from bot.handlers.mileage import router as mileage_router
+from bot.handlers.director import router as director_router
 
 if not BOT_TOKEN:
     raise ValueError("BOT_TOKEN не указан в настройках!")
@@ -28,7 +30,9 @@ dp = Dispatcher()
 dp.include_router(start_router)
 dp.include_router(vehicles_router)
 dp.include_router(reports_router)
+dp.include_router(director_router)
 dp.include_router(accountant_router)
+dp.include_router(mileage_router)
 dp.include_router(menu_router)
 
 async def main():

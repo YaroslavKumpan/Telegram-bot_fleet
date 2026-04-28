@@ -1,11 +1,13 @@
-# services/notification_service.py (полный исправленный файл)
-from apps.users.models import User
-from apps.reports.models import ServiceReport
-from services.vehicle_service import format_vehicle_number
-from infra.telegram_client import telegram_client
-from django.conf import settings
 import logging
 import os
+from datetime import date, timedelta
+from django.db.models import Max
+from django.utils import timezone
+from apps.reports.models import ServiceReport, WashReport
+from apps.users.models import User
+from apps.vehicles.models import Vehicle
+from infra.telegram_client import telegram_client
+from services.vehicle_service import format_vehicle_number
 
 logger = logging.getLogger(__name__)
 
@@ -139,3 +141,41 @@ def notify_accountants_daily_report(reports_by_driver: dict, date):
             )
         except Exception as e:
             logger.error(f"Failed to send daily report to {accountant.telegram_id}: {e}")
+
+def get_vehicles_with_wash_reports(days: int = 30) -> list:
+    """Машины, у которых есть фото мойки за последние N дней."""
+    cutoff = date.today() - timedelta(days=days)
+    vehicles = Vehicle.objects.filter(
+        wash_reports__created_at__date__gte=cutoff
+    ).select_related('driver').distinct().order_by('number')
+    return list(vehicles)
+
+def get_wash_reports_for_vehicle(vehicle_id: int, days: int = 30) -> list:
+    """Список отчётов о мойке для конкретной машины."""
+    cutoff = date.today() - timedelta(days=days)
+    reports = WashReport.objects.filter(
+        vehicle_id=vehicle_id,
+        created_at__date__gte=cutoff
+    ).select_related('vehicle').order_by('-created_at')
+    return list(reports)
+
+
+def get_current_wash_violations():
+    """Возвращает список текущих нарушений мойки (vehicle, days) без отправки."""
+    cutoff = timezone.now() - timedelta(days=7)
+    vehicles = Vehicle.objects.annotate(
+        last_wash=Max('wash_reports__created_at')
+    ).filter(
+        last_wash__lt=cutoff
+    ) | Vehicle.objects.filter(wash_reports__isnull=True)
+
+    vehicles = vehicles.select_related('driver').distinct()
+    violations = []
+    for vehicle in vehicles:
+        if vehicle.last_wash:
+            days = (timezone.now() - vehicle.last_wash).days
+        else:
+            # Если дата создания водителя не хранится, можно заменить на 30
+            days = (timezone.now() - vehicle.created_at).days if hasattr(vehicle, 'created_at') else 30
+        violations.append((vehicle, days))
+    return violations

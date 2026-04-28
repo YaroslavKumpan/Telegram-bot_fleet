@@ -1,4 +1,6 @@
 from django.db import models
+
+from apps.users.models import User
 from apps.vehicles.models import Vehicle
 
 class WashReport(models.Model):
@@ -50,22 +52,28 @@ class ServiceReport(models.Model):
         return f'Акт {self.vehicle.number} от {self.created_at:%d.%m.%Y}'
 
 
-class MileageReport(models.Model):
-    """Отчёт о пробеге автомобиля"""
-    vehicle = models.ForeignKey(
+class Mileage(models.Model):
+    """Текущий пробег машины. Хранится только последнее значение."""
+    vehicle = models.OneToOneField(
         Vehicle,
         on_delete=models.CASCADE,
-        related_name='mileage_reports',
+        related_name='mileage',
         verbose_name='Автомобиль'
     )
-    mileage = models.PositiveIntegerField('Пробег (км)')
-    photo = models.ImageField('Фото одометра', upload_to='mileage_photos/', null=True, blank=True)
-    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    value = models.PositiveIntegerField('Пробег (км)')
+    updated_at = models.DateTimeField('Дата обновления', auto_now=True)
+    updated_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='mileage_updates',
+        verbose_name='Кто обновил'
+    )
 
     class Meta:
-        verbose_name = 'Отчёт о пробеге'
-        verbose_name_plural = 'Отчёты о пробеге'
-        ordering = ['-created_at']
+        verbose_name = 'Пробег'
+        verbose_name_plural = 'Пробеги'
 
     def __str__(self):
-        return f'Пробег {self.vehicle.number}: {self.mileage} км от {self.created_at:%d.%m.%Y}'
+        return f'{self.vehicle.number}: {self.value} км'

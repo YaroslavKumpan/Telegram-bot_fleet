@@ -1,7 +1,8 @@
-# bot/handlers/accountant.py
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from asgiref.sync import sync_to_async
+
+from bot.filters.filters import RoleFilter
 from services.user_service import get_user_by_telegram_id_sync
 from services.accountant_service import (
     get_all_vehicles_with_reports,
@@ -13,11 +14,12 @@ from services.vehicle_service import format_vehicle_number
 from bot.keyboards.default import main_menu_keyboard
 from bot.keyboards.accountant import vehicles_list_keyboard
 from aiogram.types import FSInputFile
+from services.mileage_service import get_all_mileages_sync, get_vehicles_without_mileage_sync
 
 router = Router()
 
 
-@router.message(F.text == "📋 Акты работ")
+@router.message(F.text == "📋 Акты работ", RoleFilter("accountant"))
 async def show_acts_menu(message: Message):
     user = await sync_to_async(get_user_by_telegram_id_sync)(message.from_user.id)
     if not user or user.role != 'accountant':
@@ -137,3 +139,28 @@ async def view_act_photo(callback: CallbackQuery):
             await callback.answer(f"Ошибка отправки фото: {e}", show_alert=True)
     else:
         await callback.answer("Фото отсутствует", show_alert=True)
+
+@router.message(F.text == "🛣 Пробеги", RoleFilter("accountant"))
+async def show_mileage(message: Message):
+    mileages = await sync_to_async(get_all_mileages_sync)()
+    without = await sync_to_async(get_vehicles_without_mileage_sync)()
+
+    if not mileages and not without:
+        await message.answer("Нет данных о пробегах.", reply_markup=main_menu_keyboard('accountant'))
+        return
+
+    text = "🛣 <b>Пробеги машин</b>\n\n"
+
+    if mileages:
+        for m in mileages:
+            text += (
+                f"🚗 {m['vehicle_number']} — <b>{m['value']:,} км</b>\n"
+                f"   👤 {m['driver_name']} | 📅 {m['updated_at'].strftime('%d.%m.%Y')}\n\n"
+            ).replace(",", " ")  # убираем запятые в числе
+
+    if without:
+        text += "⚠️ <b>Нет данных:</b>\n"
+        for v in without:
+            text += f"• {format_vehicle_number(v.number)} ({v.driver.full_name})\n"
+
+    await message.answer(text, reply_markup=main_menu_keyboard('accountant'))

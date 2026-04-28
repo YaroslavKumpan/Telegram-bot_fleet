@@ -14,19 +14,18 @@ def accountant_main_menu() -> ReplyKeyboardMarkup:
         input_field_placeholder="Выберите раздел"
     )
 
-def vehicles_list_keyboard(vehicles: list, prefix: str = "acts") -> InlineKeyboardMarkup:
+def vehicles_list_keyboard(vehicles: list, prefix: str = "acts", use_accountant_prefix: bool = True) -> InlineKeyboardMarkup:
     """
-    Клавиатура со списком машин для бухгалтера.
-    prefix: 'acts' или 'mileage'
+    prefix: например "director_wash", "director_acts", "acts"
+    use_accountant_prefix: если True, добавляет "accountant_" (для бухгалтера).
     """
     buttons = []
     for vehicle in vehicles:
-        # Показываем номер машины и водителя
-        label = f"🚗 {format_vehicle_number(vehicle.number)} — {vehicle.driver.full_name}"
+        cb_prefix = "accountant_" if use_accountant_prefix else ""
         buttons.append([
             InlineKeyboardButton(
-                text=label,
-                callback_data=f"accountant_{prefix}_{vehicle.id}"
+                text=f"🚗 {format_vehicle_number(vehicle.number)} — {vehicle.driver.full_name}",
+                callback_data=f"{cb_prefix}{prefix}_{vehicle.id}"
             )
         ])
     return InlineKeyboardMarkup(inline_keyboard=buttons)
